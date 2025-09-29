@@ -3,8 +3,8 @@
 .env/
 
 # Datos grandes
-data/**   # Ignora todo en /data
-!data/**/*.dvc   # Pero permite subir los .dvc
+data/**
+!data/**/*.dvc
 !data/**/.gitignore
 
 # Archivos temporales
