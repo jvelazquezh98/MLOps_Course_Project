@@ -3,7 +3,7 @@
 .env/
 
 # Datos grandes
-data/**
+data/**/*.csv
 !data/**/*.dvc
 !data/**/.gitignore
 
