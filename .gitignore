@@ -1,0 +1,19 @@
+# Entornos
+.venv/
+.env/
+
+# Datos grandes
+data/**   # Ignora todo en /data
+!data/**/*.dvc   # Pero permite subir los .dvc
+!data/**/.gitignore
+
+# Archivos temporales
+*.log
+*.tmp
+*.cache
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# MacOS
+.DS_Store
