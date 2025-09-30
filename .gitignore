@@ -1,6 +1,7 @@
 # Entornos
 .venv/
 .env/
+.env
 
 # Datos grandes
 data/**/*.csv
