@@ -1,4 +1,4 @@
-# MLOps_Course_Project
+# MLOps Course Project
 
 Este proyecto tiene como objetivo demostrar las capacidades de los estudiantes en las distintas etapas del desarrollo de proyectos de Machine Learning, desde la manipulación y preparación de datos hasta la construcción y evaluación de modelos.
 
@@ -50,9 +50,19 @@ MLOps_Course_Project/
     **Ejemplo:**  
     - clientes_raw_20250930.csv
     - ventas_processed_20251002.csv 
+2. **Nomenclatura de Archivos**
+    - Nomenclatura de notebooks:  
+        - `<número>_<tema>_<autor>.ipynb`
+    - `<número>`: indica el orden del flujo de trabajo (ej. `01`, `02`).
+    - `<tema>`: tema o propósito principal del notebook (`eda`, `preprocessing`, `training`, etc.).
+    - `<autor>`: iniciales o nombre corto del responsable.
 
+    **Ejemplos:**  
+    01_eda_jv.ipynb
+    02_preprocessing_cd.ipynb
+    03_training_rf_mg.ipynb
 
-2. **Figuras de análisis exploratorios**  
+3. **Figuras de análisis exploratorios**  
     Todas las figuras generadas durante el EDA deben guardarse en la carpeta: `reports/figures/`
 
     Con nomenclatura: `<tema>_<nombre_dataset>_.png`
@@ -62,7 +72,7 @@ MLOps_Course_Project/
     - distribucion_clientes_raw_20250930.png
 
 
-3. **Nomenclatura de modelos**  
+4. **Nomenclatura de modelos**  
     Los modelos entrenados y guardados en formato `.pkl` deben seguir esta convención: 
     
     `<algoritmo>_<dataset>_<version>.pkl`
