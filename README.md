@@ -14,6 +14,8 @@ MLOps_Course_Project/
 ├─ docs/
 ├─ notebooks/
 ├─ reports/
+│ ├─ figures/
+│ ├─ metrics/
 ├─ src/
 ├─ .dvcignore
 ├─ .env
@@ -29,7 +31,8 @@ MLOps_Course_Project/
 - `data/interim/`: Datos intermedios generados durante la limpieza o transformación.
 - `data/processed/`: Datos finales listos para el modelado.
 - `notebooks/`: Notebooks de análisis exploratorio y experimentación.
-- `reports/`: Informes y presentaciones ejecutivas.
+- `reports/figures/`: Imagenes generadas durante el proyecto.
+- `reports/metrics/`: Métricas de los modelos entrenados.
 - `src/`: Código fuente del proyecto.
 - `.dvc/`: Archivos y configuraciones de DVC.
 - `.venv/`: Entorno virtual del proyecto.
