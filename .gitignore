@@ -2,6 +2,7 @@
 .venv/
 .env/
 .env
+.vscode
 
 # Datos grandes
 data/**/*.csv
