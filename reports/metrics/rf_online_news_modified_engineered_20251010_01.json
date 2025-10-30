@@ -1,0 +1,45 @@
+{
+  "model": "RandomForest",
+  "params":{
+        "n_estimators": 100,
+        "max_depth": 10,
+        "max_features": "sqrt",
+        "min_samples_split": 5,
+        "min_samples_leaf": 1
+    },
+  "metrics": {
+    "AUC_test_final": 0.633,
+    "threshold_used_valid": 0.365,
+    "classification_report": {
+      "0": {
+        "precision": 0.625,
+        "recall": 0.203,
+        "f1_score": 0.306,
+        "support": 2695
+      },
+      "1": {
+        "precision": 0.586,
+        "recall": 0.903,
+        "f1_score": 0.711,
+        "support": 3371
+      },
+      "accuracy": 0.592,
+      "macro_avg": {
+        "precision": 0.605,
+        "recall": 0.553,
+        "f1_score": 0.508,
+        "support": 6066
+      },
+      "weighted_avg": {
+        "precision": 0.603,
+        "recall": 0.592,
+        "f1_score": 0.531,
+        "support": 6066
+      }
+    },
+    "confusion_matrix": [
+      [546, 2149],
+      [328, 3043]
+    ]
+  }
+}
