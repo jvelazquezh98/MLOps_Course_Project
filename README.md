@@ -1,30 +1,53 @@
-# MLOps Course Project
+# MLOps_Course_Project
+
+<a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
+    <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
+</a>
 
 Este proyecto tiene como objetivo demostrar las capacidades de los estudiantes en las distintas etapas del desarrollo de proyectos de Machine Learning, desde la manipulación y preparación de datos hasta la construcción y evaluación de modelos.
 
 ## Estructura del Proyecto
 
 ```
-MLOps_Course_Project/
-├─ .venv/
-├─ data/
-│ ├─ interim/
-│ ├─ processed/
-│ └─ raw/
-├─ docs/
-├─ notebooks/
-├─ reports/
-│ ├─ figures/
-│ ├─ metrics/
-├─ src/
-├─ .dvcignore
-├─ .env
-├─ .gitignore
-├─ .python-version
-├─ main.py
-├─ pyproject.toml
-├─ README.md
-└─ uv.lock
+├── LICENSE            <- Licencia open-source
+├── Makefile           <- Makefile con comandos generales
+├── README.md          <- Top-level README para desarrolladores del proyecto
+├── data
+│   ├── interim        <- Data en proceso intermedio de transformación
+│   ├── processed      <- Datasets finales
+│   └── raw            <- Datasets originales
+│
+├── docs               <- Default proyecto mkdocs; consultar www.mkdocs.org para mas detalles
+│
+├── models             <- Modelos entrenados y serializados
+│
+├── notebooks          <- Jupyter notebooks.
+│
+├── pyproject.toml     <- Configuración del proyecto con metadata de paqueterías.
+│
+├── references         <- Diccionarios de datos, manuales, materiales explicativos.
+│
+├── reports            <- Análisis generados como HTML, PDF, LaTeX, etc.
+│   └── figures        <- Gráficos generados.
+│
+├── setup.cfg          <- File de configuración para flake8
+│
+└── src   <- Source code para el proyecto
+    │
+    ├── __init__.py             <- Inicializa módulo de python
+    │
+    ├── config.py               <- Guarda variables y configuraciones útiles
+    │
+    ├── dataset.py              <- Scripts para descargar o generar datos
+    │
+    ├── features.py             <- Código para generar features para modelar
+    │
+    ├── modeling                
+    │   ├── __init__.py 
+    │   ├── predict.py          <- Código para hacer inferencia con modelos entrenados
+    │   └── train.py            <- Código para entrenar modelos
+    │
+    └── plots.py                <- Código para crear visualizacioes
 ```
 
 - `data/raw/`: Contiene los datos originales sin modificar.
