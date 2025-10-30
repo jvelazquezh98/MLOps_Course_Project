@@ -1,0 +1,6 @@
+[core]
+    remote = storage
+['remote "gdrive"']
+    url = gdrive://1USMkt715e_MoDhc0EOr1Gi-HVFYvDalP
+['remote "storage"']
+    url = s3://026090513411-mlops-project-bucket/datasets

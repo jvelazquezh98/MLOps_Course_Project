@@ -1,0 +1,21 @@
+# Entornos
+.venv/
+.env/
+.env
+.vscode
+
+# Datos grandes
+data/**/*.csv
+!data/**/*.dvc
+!data/**/.gitignore
+
+# Archivos temporales
+*.log
+*.tmp
+*.cache
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# MacOS
+.DS_Store
