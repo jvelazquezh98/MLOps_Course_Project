@@ -28,6 +28,15 @@ def train_model():
     )
 
     # Define the model hyperparameters
+    # sugiero que los parametros puedan ser modificados desde linea de comando
+    # puedes usar typer.Option para eso, tendrías que agregar params como argumento de main y pasarlo a train_model
+    # ejemplo:
+    # def train_model(params: dict):
+    # ...
+    # En main:
+    # def main(
+    #       ...
+    #    params: dict = typer.Option({}, help="Hyperparameters for the model")
     params = {
         "solver": "lbfgs",
         "max_iter": 1000,
@@ -42,6 +51,7 @@ def train_model():
     y_pred = lr.predict(X_test)
 
     # Calculate metrics
+    # Agrega las que quieras, en este caso solo accuracy
     metrics = {
         "accuracy": accuracy_score(y_test, y_pred),
     }
@@ -83,6 +93,7 @@ def main(
         mlflow.log_params(params)
 
         # Log the loss metric
+        # Aqui agregas las metricas que quieras, en este caso solo accuracy, debes regresarlas en train_model
         mlflow.log_metric("accuracy", metrics["accuracy"])
 
         # Infer the model signature
