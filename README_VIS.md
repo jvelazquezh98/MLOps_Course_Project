@@ -236,30 +236,6 @@ uv pip install pandas numpy matplotlib seaborn scikit-learn typer loguru tabulat
 
 ---
 
-## 🎯 Puntos de la Matriz Completados
-
-Con estos scripts completas:
-
-✅ **Resultados (15 pts)**: Visualizaciones comprehensivas y presentación clara de métricas
-
-✅ **Métodos y técnicas (20 pts)**: Comparación automatizada justifica selección de modelos
-
-✅ **Documentación inline**: Notebooks con documentación detallada y estructurada
-
----
-
-## 💡 Tips
-
-1. **Ejecuta los scripts después de cada entrenamiento** para mantener visualizaciones actualizadas
-
-2. **Usa el modo --debug** cuando algo no funcione para ver logs detallados
-
-3. **Personaliza las plantillas** en `DOCUMENTATION_TEMPLATES` según tus necesidades
-
-4. **Integra con MLflow** para tracking automático de visualizaciones
-
----
-
 ## 🐛 Troubleshooting
 
 ### Error: "No se encontraron métricas"
