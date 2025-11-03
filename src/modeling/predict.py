@@ -6,17 +6,20 @@ import typer
 import pandas as pd
 import joblib
 import mlflow
+import os
 
-from src.config import MODELS_DIR, PROCESSED_DATA_DIR
+from src.config import MODELS_DIR, PROCESSED_DATA_DIR, PROJ_ROOT
 
 app = typer.Typer(help="Script para realizar inferencias con el modelo entrenado")
 
 @app.command()
 def main(
-    features_path: Path = PROCESSED_DATA_DIR / "features.csv",
-    model_path: Path = MODELS_DIR / "model.pkl",
-    predictions_path: Path = PROCESSED_DATA_DIR / "predictions.csv",
+    features_path: Path = PROCESSED_DATA_DIR,
+    model_path: Path = MODELS_DIR,
+    predictions_path: Path = PROJ_ROOT / "reports" / "inference",
     mlflow_run_id: str = typer.Option(None, "--mlflow-run-id", help="Run ID del modelo en MLflow (opcional)"),
+    model_id: str = typer.Option(None, "--model-id", help="Nombre del modelo guardado localmente"),
+    batch_id: str = typer.Option("features.csv", "--batch-id", help="Identificador del lote de datos"),
 ):
     """
     Realiza inferencias sobre datos nuevos usando el modelo entrenado.
@@ -32,6 +35,12 @@ def main(
             model = mlflow.sklearn.load_model(f"runs:/{mlflow_run_id}/model")
         else:
             logger.info(f"Cargando modelo local desde: {model_path}")
+            if model_id is None:
+                os.listdir(model_path).sort()
+                model_id = os.listdir(model_path)[-1]  # cargar el modelo más
+                logger.info(f"Ningún model_id proporcionado. Usando el modelo más reciente: {model_id}")
+        
+            model_path = model_path / model_id / "model.pkl"
             model = joblib.load(model_path)
         logger.success("Modelo cargado correctamente.")
     except Exception as e:
@@ -45,6 +54,7 @@ def main(
         logger.error(f"No se encontró el archivo de features: {features_path}")
         raise typer.Exit(code=1)
 
+    features_path = features_path / batch_id
     df = pd.read_csv(features_path)
     logger.info(f"Features cargadas correctamente: {df.shape[0]} filas, {df.shape[1]} columnas")
 
@@ -85,12 +95,15 @@ def main(
     # -------------------------------------------------------------------------
     # 5️Guardar resultados
     # -------------------------------------------------------------------------
-    predictions_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(predictions_path, index=False)
-    logger.success(f"Predicciones guardadas en: {predictions_path}")
+    #predictions_path.parent.mkdir(parents=True, exist_ok=True)
+    predictions_path.mkdir(parents=True, exist_ok=True)
+    inference_name = f"inference_{batch_id.split('.')[0]}_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+    df["probability"].to_csv(predictions_path / inference_name, index=False)
+    logger.success(f"Predicciones guardadas en: {predictions_path / inference_name}")
 
     logger.success(" Proceso de inferencia completado con éxito.")
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app()

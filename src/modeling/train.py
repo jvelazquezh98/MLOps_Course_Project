@@ -169,6 +169,10 @@ def main(
 ):
     setup_logger(debug)
 
+    if register_model_name is None:
+        register_model_name = f"rf_model_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}"
+        logger.info(f"Nombre del modelo no proporcionado. Usando nombre por defecto: {register_model_name}")
+
     try:
         # Parseo y validación de hiperparámetros
         user_params = json.loads(params) if params else {}
@@ -208,6 +212,14 @@ def main(
                 signature=signature,
                 registered_model_name=register_model_name
             )
+            # save the model locally
+            mlflow.sklearn.save_model(
+                sk_model=result["model"],
+                path=f"./models/{register_model_name}",
+                signature=signature,
+                input_example=result["X_example"],
+            )
+
 
         logger.info(f"Entrenamiento completado. Métricas: {json.dumps(result['metrics'], ensure_ascii=False)}")
 
