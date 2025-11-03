@@ -158,7 +158,7 @@ python -m src.documentation.notebook_documenter apply-documentation \
   --output-path notebooks/01_eda_documented.ipynb
 ```
 
-### Ejemplos Completos
+### Ejemplos
 
 ```bash
 # Workflow completo de documentación
@@ -251,5 +251,3 @@ uv pip install pandas numpy matplotlib seaborn scikit-learn typer loguru tabulat
 - En servidores sin GUI, usa backend 'Agg': `matplotlib.use('Agg')`
 
 ---
-
-¿Necesitas ayuda? Revisa los logs con `--debug` o consulta la documentación inline de cada script.
