@@ -176,14 +176,21 @@ async def get_datasets_info() -> Dict[str, Any]:
             }
         }
     """
+    datasets = {}
+
+    for folder in Path("data").iterdir():
+        if folder.is_dir():
+            for file in folder.iterdir():
+                all_files = [f.name for f in folder.iterdir()]
+                if file.suffix == ".csv":
+                    datasets[file.stem] = {
+                        "status": "tracked_by_dvc" if file.name + ".dvc" in all_files else "not_tracked",
+                        "format": "csv",
+                        "description": f"{folder.name.capitalize()} dataset"
+                    }
+
     return {
-        "datasets": {
-            "online_news_original": {
-                "status": "tracked_by_dvc",
-                "format": "csv",
-                "description": "Original online news dataset"
-            }
-        },
+        "datasets": datasets,
         "data_structure": {
             "raw": "Original unmodified data",
             "interim": "Intermediate data during cleaning/transformation", 
@@ -376,6 +383,7 @@ async def train_test(
     data_path: Optional[str] = Form(None, description="Path to the training dataset CSV file"),
     target: Optional[str] = Form(None, description="Name of the target column"),
     params: Optional[str] = Form(None, description="JSON string with model hyperparameters"),
+    ignore_drift: bool = Form(False, description="Whether to ignore data drift detection")
 ) -> Dict[str, Any]:
     """
     Train a Random Forest model with the provided dataset and parameters.
@@ -401,7 +409,50 @@ async def train_test(
                 , params=json.loads(params) if params else None
                 , save_metrics=False)
     
+    if check_for_drift(function_result["metrics"]):
+        logger.warning("Data drift detected based on the provided metrics.")
+        # Raise an HTTPException or handle as needed
+        if not ignore_drift:
+            raise HTTPException(status_code=400, detail=("Data drift detected based on the provided metrics. "
+                                                        "To continue training, please address the drift issue or run training with param 'ignore_drift=True'.\n"
+                                                        f"Current metrics: {function_result['metrics']}"))
+        else:
+            logger.info("Ignoring data drift as per request parameter.")
+    
     return {
         "message": "Model training test completed successfully.",
         "metrics": function_result["metrics"]
     }
+
+def check_for_drift(metrics: Dict[str, float]) -> bool:
+    """
+    This function loads current metrics and launches an alert if drift is detected on training vs current metrics.
+
+    Args:
+        metrics (Dict[str, float]): Dictionary of metric names and their values to check for drift.
+
+    Returns:
+        None
+    """
+    metrics_file = Path("reports/metrics/metrics.json")
+    if not metrics_file.exists():
+        logger.warning("No metrics file found for drift detection.")
+        return False
+    
+    with open(metrics_file, 'r') as f:
+        current_metrics = json.load(f)
+
+    for metric_name, new_value in metrics.items():
+        if metric_name in current_metrics:
+            old_value = current_metrics[metric_name]
+            if abs(new_value - old_value) / (old_value + 1e-9) > 0.1:
+                logger.warning(f"Drift detected in metric '{metric_name}': old={old_value}, new={new_value}")
+                return True
+        else:
+            logger.info(f"Metric '{metric_name}' not found in current metrics for drift detection.")
+
+    logger.info("No drift detected in the provided metrics.")
+    return False
+
+
+    

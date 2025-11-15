@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && pip install --no-cache-dir uv \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ===== Copiar manifests primero (cache de deps) =====
+# ===== Copiar manifests primero =====
 COPY pyproject.toml uv.lock* /opt/app-root/
 RUN --mount=type=cache,target=/opt/app-root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
@@ -26,7 +26,7 @@ COPY . /opt/app-root
 RUN --mount=type=cache,target=/opt/app-root/.cache/uv \
     uv sync --frozen --no-dev
 
-# ===== Permisos (necesarios si lo usas en OpenShift/UBI) =====
+# ===== Permisos =====
 RUN chgrp -R root /opt/app-root && chmod -R g+rwx /opt/app-root/
 
 COPY entrypoint.sh /opt/app-root/entrypoint.sh
@@ -37,5 +37,4 @@ ENV PORT=8030
 EXPOSE 8030
 
 # ===== Arranque =====
-# Ejecuta el proyecto como lo haces en local
 CMD ["./entrypoint.sh"]
