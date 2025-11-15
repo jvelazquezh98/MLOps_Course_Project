@@ -20,13 +20,16 @@ Version: 0.1.0
 """
 
 from fastapi import FastAPI
+import uvicorn
+import argparse
 from src.rest_api import (
     root,
     health_check,
     get_project_info,
     get_datasets_info,
     get_available_models,
-    validate_with_model
+    validate_with_model,
+    train_test
 )
 
 # Initialize FastAPI application with metadata
@@ -45,3 +48,13 @@ app.get("/project-info", summary="Get project information", tags=["Project"])(ge
 app.get("/datasets", summary="Get datasets information", tags=["Data"])(get_datasets_info)
 app.get("/models", summary="Get available models", tags=["Models"])(get_available_models)
 app.post("/validate", summary="Validate data with ML model", tags=["Prediction"])(validate_with_model)
+app.post("/train_test", summary="Train a new ML model", tags=["Training"])(train_test)
+
+if __name__ == "__main__":
+    args = argparse.ArgumentParser()  # Dummy parser to satisfy uvicorn CLI
+    # create args host and port
+    args.add_argument("--host", type=str, default="0.0.0.0", help="Host to run the server on")
+    args.add_argument("--port", type=int, default=8030, help="Port to run the server on")
+    args = args.parse_args()
+
+    uvicorn.run(app, host=args.host, port=args.port)

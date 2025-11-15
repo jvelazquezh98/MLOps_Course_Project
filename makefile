@@ -56,6 +56,13 @@ dvc-add:
 	uv run dvc push
 	@echo "✅ Archivo versionado y sincronizado con remoto: $(FILE)"
 
+# retrieve datasets from DVC remote storage
+.PHONY: dvc-pull
+dvc-pull:
+	@echo "⬇️ Descargando datasets desde remoto con DVC..."
+	uv run dvc pull
+	@echo "✅ Datasets sincronizados desde remoto."
+
 ## Set up Python interpreter environment
 .PHONY: create_environment
 create_environment:
@@ -63,6 +70,31 @@ create_environment:
 	@echo ">>> New uv virtual environment created. Activate with:"
 	@echo ">>> Windows: .\\\\.venv\\\\Scripts\\\\activate"
 	@echo ">>> Unix/macOS: source ./.venv/bin/activate"
+
+# Build the Docker image
+.PHONY: docker-build
+docker-build:
+	docker build -t mlops_project:latest .
+
+# Run the Docker container if already built
+.PHONY: docker-run
+docker-run:
+	echo "🆕 Creando contenedor (pero sin arrancarlo todavía)..."
+	docker create -p 8030:8030 --name mlops_container mlops_project:latest
+
+	if [ -f .env ]; then \
+		echo "📄 Copiando .env al contenedor..."; \
+		docker cp .env mlops_container:/opt/app-root/.env; \
+	fi; \
+	echo "🚀 Iniciando contenedor..."; \
+	docker start mlops_container; \
+
+
+# Stop Docker container
+.PHONY: docker-stop
+docker-stop:
+	docker stop mlops_container || true
+	docker rm mlops_container || true
 
 #################################################################################
 # Self Documenting Commands                                                     #
