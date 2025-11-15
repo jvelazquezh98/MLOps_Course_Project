@@ -23,13 +23,19 @@ Version: 0.1.0
 """
 
 from fastapi import UploadFile, File, Form, HTTPException
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import json
 import os
 import pandas as pd
 import pickle
 import io
 from pathlib import Path
+from loguru import logger
+import sys
+
+# Import training function from modeling module
+sys.path.append(str(Path(__file__).parent))
+from modeling.train import train_model, DEFAULT_PARAMS, ALLOWED_PARAM_KEYS
 
 
 async def root() -> Dict[str, str]:
@@ -218,12 +224,15 @@ async def get_available_models() -> Dict[str, Any]:
     available_models = []
     
     if models_dir.exists():
-        for model_file in models_dir.glob("*.pkl"):
-            available_models.append({
-                "name": model_file.stem,
-                "filename": model_file.name,
-                "path": str(model_file)
-            })
+        # change for to loop over folders inside models_dir
+        for model_folder in models_dir.iterdir():
+            if model_folder.is_dir():
+                for model_file in model_folder.glob("*.pkl"):
+                    available_models.append({
+                        "name": model_folder.name,
+                        "filename": model_file.name,
+                        "path": str(model_file)
+                    })
     
     return {
         "available_models": available_models,
@@ -286,7 +295,7 @@ async def validate_with_model(
         raise HTTPException(status_code=400, detail="File must be a CSV file")
     
     # Check if model exists
-    model_path = Path(f"models/{model_name}.pkl")
+    model_path = Path(f"models/{model_name}/model.pkl")
     if not model_path.exists():
         raise HTTPException(
             status_code=404, 
@@ -298,14 +307,41 @@ async def validate_with_model(
         contents = await csv_file.read()
         df = pd.read_csv(io.StringIO(contents.decode('utf-8')))
         
+        # Store original columns for reference
+        original_columns = df.columns.tolist()
+        
+        # Remove non-numeric columns (like 'url', text fields, etc.)
+        # Also remove target variable if present
+        columns_to_drop = ['url', 'shares']
+        df_clean = df.drop(columns=[col for col in columns_to_drop if col in df.columns], errors='ignore')
+        
+        # Ensure all remaining columns are numeric
+        df_clean = df_clean.select_dtypes(include=['number'])
+        print(df_clean)
+        
         # Load the model
         with open(model_path, 'rb') as f:
             model = pickle.load(f)
         
+        # Get expected features from the model if available
+        if hasattr(model, 'feature_names_in_'):
+            expected_features = model.feature_names_in_.tolist()
+            logger.info(f"Model expects {len(expected_features)} features: {expected_features}")
+            logger.info(f"CSV has {len(df_clean.columns)} features: {df_clean.columns.tolist()}")
+            
+            # Filter dataframe to only include expected features
+            missing_features = [f for f in expected_features if f not in df_clean.columns]
+            if missing_features:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Missing required features: {missing_features}. Model expects: {expected_features}"
+                )
+            df_clean = df_clean[expected_features]
+        else:
+            logger.warning(f"Model doesn't have feature_names_in_ attribute. Using all {len(df_clean.columns)} numeric columns.")
+        
         # Make predictions
-        # Note: This assumes the model expects all columns except the target
-        # You might need to adjust this based on your specific model requirements
-        predictions = model.predict(df)
+        predictions = model.predict(df_clean.values)
         
         # Convert predictions to list for JSON serialization
         if hasattr(predictions, 'tolist'):
@@ -317,9 +353,11 @@ async def validate_with_model(
             "status": "success",
             "model_used": model_name,
             "input_shape": df.shape,
+            "features_used": df_clean.shape[1],
             "predictions_count": len(predictions_list),
             "predictions": predictions_list,
-            "input_columns": df.columns.tolist(),
+            "original_columns": original_columns,
+            "features_columns": df_clean.columns.tolist(),
             "message": f"Successfully made {len(predictions_list)} predictions using model '{model_name}'"
         }
         
@@ -332,3 +370,38 @@ async def validate_with_model(
             status_code=500, 
             detail=f"Error processing request: {str(e)}"
         )
+
+
+async def train_test(
+    data_path: Optional[str] = Form(None, description="Path to the training dataset CSV file"),
+    target: Optional[str] = Form(None, description="Name of the target column"),
+    params: Optional[str] = Form(None, description="JSON string with model hyperparameters"),
+) -> Dict[str, Any]:
+    """
+    Train a Random Forest model with the provided dataset and parameters.
+    
+    This endpoint accepts training parameters and executes the model training process
+    using MLflow for experiment tracking. It trains a RandomForestClassifier and
+    registers the model in MLflow.
+    
+    Args:
+        data_path (str): Path to the CSV file containing training data.
+            Must be a valid path to an existing CSV file.
+        target (str): Name of the target column in the dataset.
+            If the column doesn't exist but 'shares' exists, it will be created
+            automatically as a binary classification (shares > 1400).
+        params (Optional[str]): JSON string with model hyperparameters.
+            Allowed parameters: n_estimators, max_depth, min_samples_split,
+            min_samples_leaf, max_features, random_state.
+            Example: '{"n_estimators": 300, "max_depth": 12}'
+    """
+
+    function_result = train_model(data_path=Path(data_path) if data_path else None
+                , target=target if target else None
+                , params=json.loads(params) if params else None
+                , save_metrics=False)
+    
+    return {
+        "message": "Model training test completed successfully.",
+        "metrics": function_result["metrics"]
+    }

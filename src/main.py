@@ -28,7 +28,8 @@ from src.rest_api import (
     get_project_info,
     get_datasets_info,
     get_available_models,
-    validate_with_model
+    validate_with_model,
+    train_test
 )
 
 # Initialize FastAPI application with metadata
@@ -47,6 +48,7 @@ app.get("/project-info", summary="Get project information", tags=["Project"])(ge
 app.get("/datasets", summary="Get datasets information", tags=["Data"])(get_datasets_info)
 app.get("/models", summary="Get available models", tags=["Models"])(get_available_models)
 app.post("/validate", summary="Validate data with ML model", tags=["Prediction"])(validate_with_model)
+app.post("/train_test", summary="Train a new ML model", tags=["Training"])(train_test)
 
 if __name__ == "__main__":
     args = argparse.ArgumentParser()  # Dummy parser to satisfy uvicorn CLI
