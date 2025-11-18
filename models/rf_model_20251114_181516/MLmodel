@@ -1,0 +1,78 @@
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.7.2
+is_signature_from_type_hint: false
+mlflow_version: 3.5.1
+model_id: null
+model_size_bytes: 54666038
+model_uuid: b7e3ffc5bd4647c9916a1a20741eff75
+prompts: null
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "timedelta", "required": true}, {"type": "double",
+    "name": "n_tokens_title", "required": true}, {"type": "double", "name": "n_tokens_content",
+    "required": true}, {"type": "double", "name": "n_unique_tokens", "required": true},
+    {"type": "double", "name": "n_non_stop_words", "required": true}, {"type": "double",
+    "name": "n_non_stop_unique_tokens", "required": true}, {"type": "double", "name":
+    "num_hrefs", "required": true}, {"type": "double", "name": "num_self_hrefs", "required":
+    true}, {"type": "double", "name": "num_imgs", "required": true}, {"type": "double",
+    "name": "num_videos", "required": true}, {"type": "double", "name": "average_token_length",
+    "required": true}, {"type": "double", "name": "num_keywords", "required": true},
+    {"type": "double", "name": "data_channel_is_lifestyle", "required": true}, {"type":
+    "double", "name": "data_channel_is_entertainment", "required": true}, {"type":
+    "double", "name": "data_channel_is_bus", "required": true}, {"type": "double",
+    "name": "data_channel_is_socmed", "required": true}, {"type": "double", "name":
+    "data_channel_is_tech", "required": true}, {"type": "double", "name": "data_channel_is_world",
+    "required": true}, {"type": "double", "name": "kw_min_min", "required": true},
+    {"type": "double", "name": "kw_max_min", "required": true}, {"type": "double",
+    "name": "kw_avg_min", "required": true}, {"type": "double", "name": "kw_min_max",
+    "required": true}, {"type": "double", "name": "kw_max_max", "required": true},
+    {"type": "double", "name": "kw_avg_max", "required": true}, {"type": "double",
+    "name": "kw_min_avg", "required": true}, {"type": "double", "name": "kw_max_avg",
+    "required": true}, {"type": "double", "name": "kw_avg_avg", "required": true},
+    {"type": "double", "name": "self_reference_min_shares", "required": true}, {"type":
+    "double", "name": "self_reference_max_shares", "required": true}, {"type": "double",
+    "name": "self_reference_avg_sharess", "required": true}, {"type": "double", "name":
+    "weekday_is_monday", "required": true}, {"type": "double", "name": "weekday_is_tuesday",
+    "required": true}, {"type": "double", "name": "weekday_is_wednesday", "required":
+    true}, {"type": "double", "name": "weekday_is_thursday", "required": true}, {"type":
+    "double", "name": "weekday_is_friday", "required": true}, {"type": "double", "name":
+    "weekday_is_saturday", "required": true}, {"type": "double", "name": "weekday_is_sunday",
+    "required": true}, {"type": "double", "name": "is_weekend", "required": true},
+    {"type": "double", "name": "LDA_00", "required": true}, {"type": "double", "name":
+    "LDA_01", "required": true}, {"type": "double", "name": "LDA_02", "required":
+    true}, {"type": "double", "name": "LDA_03", "required": true}, {"type": "double",
+    "name": "LDA_04", "required": true}, {"type": "double", "name": "global_subjectivity",
+    "required": true}, {"type": "double", "name": "global_sentiment_polarity", "required":
+    true}, {"type": "double", "name": "global_rate_positive_words", "required": true},
+    {"type": "double", "name": "global_rate_negative_words", "required": true}, {"type":
+    "double", "name": "rate_positive_words", "required": true}, {"type": "double",
+    "name": "rate_negative_words", "required": true}, {"type": "double", "name": "avg_positive_polarity",
+    "required": true}, {"type": "double", "name": "min_positive_polarity", "required":
+    true}, {"type": "double", "name": "max_positive_polarity", "required": true},
+    {"type": "double", "name": "avg_negative_polarity", "required": true}, {"type":
+    "double", "name": "min_negative_polarity", "required": true}, {"type": "double",
+    "name": "max_negative_polarity", "required": true}, {"type": "double", "name":
+    "title_subjectivity", "required": true}, {"type": "double", "name": "title_sentiment_polarity",
+    "required": true}, {"type": "double", "name": "abs_title_subjectivity", "required":
+    true}, {"type": "double", "name": "abs_title_sentiment_polarity", "required":
+    true}, {"type": "double", "name": "mixed_type_col_clean", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-11-15 00:15:24.193417'

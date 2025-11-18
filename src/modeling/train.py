@@ -59,7 +59,15 @@ DEFAULT_PARAMS: Dict[str, Any] = {
 # ---------------------------------------------------------
 # Núcleo de entrenamiento (alineado al notebook)
 # ---------------------------------------------------------
-def train_model(data_path: Path, target: str, params: Dict[str, Any]) -> Dict[str, Any]:
+def train_model(data_path: Path = None, target: str = None, params: Dict[str, Any]= None
+                , save_metrics: bool = True) -> Dict[str, Any]:
+    if data_path is None:
+        data_path = Path("data/processed/features.csv")
+    if target is None:
+        target = "popular"
+    if params is None:
+        params = DEFAULT_PARAMS
+
     logger.info(f"Leyendo dataset: {data_path}")
     if not data_path.exists():
         raise FileNotFoundError(f"No existe el archivo: {data_path}")
@@ -140,9 +148,10 @@ def train_model(data_path: Path, target: str, params: Dict[str, Any]) -> Dict[st
     }
 
     # Artefacto local de métricas
-    os.makedirs("reports/metrics", exist_ok=True)
-    with open("reports/metrics/metrics.json", "w") as f:
-        json.dump(metrics, f, indent=2)
+    if save_metrics:
+        os.makedirs("reports/metrics", exist_ok=True)
+        with open("reports/metrics/metrics.json", "w") as f:
+            json.dump(metrics, f, indent=2)
 
     return {
         "model": model,
