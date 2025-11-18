@@ -47,7 +47,23 @@ Este proyecto tiene como objetivo demostrar las capacidades de los estudiantes e
     │   ├── predict.py          <- Código para hacer inferencia con modelos entrenados
     │   └── train.py            <- Código para entrenar modelos
     │
-    └── plots.py                <- Código para crear visualizacioes
+    ├── plots.py                <- Código para crear visualizacioes
+    │
+    ├── rest_api.py             <- REST API endpoints para el modelo
+    │
+    ├── main.py                 <- FastAPI application entry point
+    │
+    └── test                    <- Test suite para el proyecto
+        ├── __init__.py
+        ├── conftest.py         <- Fixtures compartidos
+        ├── test_config.py      <- Tests de configuración
+        ├── test_features.py    <- Tests de feature engineering
+        ├── test_modeling.py    <- Tests de entrenamiento/predicción
+        ├── test_evaluation.py  <- Tests de evaluación de modelos
+        ├── test_visualization.py <- Tests de visualización
+        ├── test_integration.py <- Tests de integración E2E
+        ├── test_rest_api.py    <- Tests de API
+        └── test_main.py        <- Tests de aplicación FastAPI
 ```
 
 - `data/raw/`: Contiene los datos originales sin modificar.
@@ -169,3 +185,109 @@ Utilizar los datasets para entrenar modelos, generar archivos `.pkl` y pipelines
 - Creación de scripts de entrenamiento e inferencia (migración de notebooks a scripts `.py`).  
 - Generación de métricas finales para evaluación de modelos.  
     - Rol: **DevOps**
+
+---
+
+## Pruebas
+
+### Ejecutar Pruebas
+
+El proyecto incluye un suite completo de pruebas unitarias e integración:
+
+```bash
+# Ejecutar todas las pruebas
+pytest -q
+
+# Ejecutar con cobertura
+pytest --cov=src --cov-report=html
+
+# Ejecutar pruebas específicas
+pytest src/test/test_integration.py -v
+```
+
+### Cobertura de Pruebas
+
+- ✅ **107 pruebas implementadas**
+- ✅ **99% de éxito en pruebas nuevas**
+- ✅ **Cobertura completa del pipeline MLOps**
+
+**Componentes Validados:**
+- Preprocesamiento de datos (11 pruebas)
+- Entrenamiento de modelos (17 pruebas)
+- Evaluación y métricas (18 pruebas)
+- Visualizaciones (24 pruebas)
+- Integración extremo a extremo (17 pruebas)
+- API REST (14 pruebas)
+
+### Documentación de Pruebas
+
+Para más información sobre las pruebas:
+- `TEST_SUMMARY.md` - Resumen completo de pruebas
+- `docs/testing_guide.md` - Guía detallada para desarrolladores
+- `src/test/README.md` - Documentación del directorio de pruebas
+- `TEST_EXECUTION_REPORT.md` - Reporte de ejecución
+- `VALIDATION_REPORT.md` - Validación de requisitos
+
+---
+
+## API REST
+
+El proyecto incluye una API REST para servir predicciones del modelo:
+
+```bash
+# Iniciar el servidor
+uvicorn src.main:app --reload
+
+# Acceder a la documentación
+http://localhost:8000/docs
+```
+
+### Endpoints Disponibles
+
+- `GET /` - Información de la API
+- `GET /health` - Health check
+- `GET /project-info` - Información del proyecto
+- `GET /datasets` - Información de datasets
+- `GET /models` - Modelos disponibles
+- `POST /validate` - Realizar predicciones
+
+---
+
+## Desarrollo
+
+### Configuración del Entorno
+
+```bash
+# Instalar dependencias
+uv sync
+
+# Activar entorno virtual
+source .venv/bin/activate  # Linux/Mac
+.venv\Scripts\activate     # Windows
+```
+
+### Ejecutar Scripts
+
+```bash
+# Feature engineering
+uv run python -m src.features
+
+# Entrenar modelo
+uv run python -m src.modeling.train --data-path data/processed/features.csv
+
+# Hacer predicciones
+uv run python -m src.modeling.predict --model-id model_name
+```
+
+### Calidad de Código
+
+```bash
+# Ejecutar pruebas
+pytest -v
+
+# Verificar cobertura
+pytest --cov=src --cov-report=term
+
+# Linting (si configurado)
+flake8 src/
+```
