@@ -1,0 +1,73 @@
+site_name: MLOps Course Project
+site_description: MLOps Course Project - Machine Learning Operations Pipeline
+site_author: MLOps Course Project Team
+site_url: https://github.com/jvelazquezh98/MLOps_Course_Project
+
+# Repository
+repo_name: jvelazquezh98/MLOps_Course_Project
+repo_url: https://github.com/jvelazquezh98/MLOps_Course_Project
+
+# Navigation
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - REST API Documentation: rest_api_docs.md
+  - Testing Guide: testing_guide.md
+  - About: README.md
+
+# Theme
+theme:
+  name: material
+  language: es
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+# Plugins
+plugins:
+  - search:
+      lang: es
+
+# Extra
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jvelazquezh98/MLOps_Course_Project

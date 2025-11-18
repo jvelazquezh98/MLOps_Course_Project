@@ -483,6 +483,38 @@ Todos los endpoints retornan errores en formato JSON:
 
 ---
 
+## Documentación
+
+El proyecto incluye documentación completa generada con MkDocs.
+
+### Ver Documentación Localmente
+
+```bash
+# Servir la documentación localmente
+uv run mkdocs serve
+
+# Acceder a la documentación
+http://localhost:8000
+```
+
+### Generar Documentación Estática
+
+```bash
+# Construir sitio estático
+uv run mkdocs build
+
+# Los archivos HTML se generarán en la carpeta site/
+```
+
+### Contenido de la Documentación
+
+- **Home**: Página principal con información del proyecto
+- **Getting Started**: Guía de inicio rápido
+- **REST API Documentation**: Documentación completa de la API
+- **Testing Guide**: Guía de pruebas y testing
+
+---
+
 ## Desarrollo
 
 ### Configuración del Entorno
