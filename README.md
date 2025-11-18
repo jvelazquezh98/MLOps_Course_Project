@@ -151,43 +151,6 @@ uv run dvc pull
 
 Esto traerá los datos en sus diferentes versiones y los ubicará en las carpetas correspondientes dentro de data/.
 
-
-## Etapas del Proyecto
-
-### Fase 1: Análisis y Preparación de Datos (2 semanas)
-
-#### Semana 1 (29 Sept – 5 Oct)
-**Objetivo:**  
-Generar 2 conjuntos de datos (divididos en train/test) para entrenar los modelos.
-
-**Tareas de Análisis**
-- Exploratory Data Analysis (EDA).
-- Generación de datasets train/test.  
-    - Roles: **Software Engineer**, **Data Engineer**
-
-**Tareas de Gestión**
-- Creación de scripts de transformación (migración de notebooks a scripts `.py` para automatización).  
-- Implementación de un pipeline de transformación y versionado de datos.  
-    - Rol: **DevOps**
-
----
-
-#### Semana 2 (6 – 12 Oct)
-**Objetivo:**  
-Utilizar los datasets para entrenar modelos, generar archivos `.pkl` y pipelines de entrenamiento e inferencia.
-
-**Tareas de Análisis**
-- Entrenamiento de modelos con diferentes algoritmos.
-- Documentación y análisis de resultados.  
-    - Roles: **Data Scientist**, **ML Engineer**
-
-**Tareas de Gestión**
-- Creación de scripts de entrenamiento e inferencia (migración de notebooks a scripts `.py`).  
-- Generación de métricas finales para evaluación de modelos.  
-    - Rol: **DevOps**
-
----
-
 ## Pruebas
 
 ### Ejecutar Pruebas
@@ -232,24 +195,291 @@ Para más información sobre las pruebas:
 
 ## API REST
 
-El proyecto incluye una API REST para servir predicciones del modelo:
+El proyecto incluye una API REST para servir predicciones del modelo y gestionar el ciclo de vida de los modelos ML.
+
+### Iniciar el Servidor
 
 ```bash
 # Iniciar el servidor
 uvicorn src.main:app --reload
 
-# Acceder a la documentación
-http://localhost:8000/docs
-```
+# Iniciar con configuración personalizada
+uv run -m src.main --host 0.0.0.0 --port 8000
 
 ### Endpoints Disponibles
 
-- `GET /` - Información de la API
-- `GET /health` - Health check
-- `GET /project-info` - Información del proyecto
-- `GET /datasets` - Información de datasets
-- `GET /models` - Modelos disponibles
-- `POST /validate` - Realizar predicciones
+#### **General**
+
+##### `GET /` - Información de la API
+Endpoint raíz que proporciona información básica sobre la API.
+
+**Respuesta:**
+```json
+{
+  "message": "MLOps Course Project API",
+  "version": "0.1.0",
+  "status": "running"
+}
+```
+
+**Ejemplo:**
+```bash
+curl http://localhost:8000/
+```
+
+---
+
+##### `GET /health` - Health Check
+Verifica que el servicio de API esté funcionando correctamente.
+
+**Respuesta:**
+```json
+{
+  "status": "healthy"
+}
+```
+
+**Ejemplo:**
+```bash
+curl http://localhost:8000/health
+```
+
+---
+
+#### **Proyecto**
+
+##### `GET /project-info` - Información del Proyecto
+Obtiene información detallada sobre el proyecto MLOps, incluyendo configuración, metadata de ingeniería de datos y features implementadas.
+
+**Respuesta:**
+```json
+{
+  "project_name": "mlops-course-project",
+  "description": "MLOps Course Project demonstrating ML pipeline capabilities",
+  "python_version": "3.13",
+  "data_engineering_metadata": {...},
+  "features": [
+    "Data Version Control (DVC)",
+    "ML Pipeline",
+    "Model Training",
+    "Data Processing"
+  ]
+}
+```
+
+**Ejemplo:**
+```bash
+curl http://localhost:8000/project-info
+```
+
+---
+
+#### **Datos**
+
+##### `GET /datasets` - Información de Datasets
+Obtiene información sobre los datasets disponibles y la estructura del pipeline de datos.
+
+**Respuesta:**
+```json
+{
+  "datasets": {
+    "online_news_original": {
+      "status": "tracked_by_dvc",
+      "format": "csv",
+      "description": "Original online news dataset"
+    }
+  },
+  "data_structure": {
+    "raw": "Original unmodified data",
+    "interim": "Intermediate data during cleaning/transformation",
+    "processed": "Final data ready for modeling"
+  }
+}
+```
+
+**Ejemplo:**
+```bash
+curl http://localhost:8000/datasets
+```
+
+---
+
+#### **Modelos**
+
+##### `GET /models` - Modelos Disponibles
+Lista todos los modelos entrenados disponibles para hacer predicciones.
+
+**Respuesta:**
+```json
+{
+  "available_models": [
+    {
+      "name": "rf_model_20251114_181516",
+      "filename": "model.pkl",
+      "path": "models/rf_model_20251114_181516"
+    }
+  ],
+  "total_models": 1
+}
+```
+
+**Ejemplo:**
+```bash
+curl http://localhost:8000/models
+```
+
+---
+
+#### **Predicción**
+
+##### `POST /validate` - Realizar Predicciones
+Valida datos y realiza predicciones usando un modelo entrenado. Acepta un archivo CSV y retorna las predicciones junto con metadata del proceso.
+
+**Parámetros:**
+- `csv_file` (file, requerido): Archivo CSV con los datos para predicción
+- `model_name` (string, requerido): Nombre del modelo a usar (nombre de la carpeta del modelo)
+
+**Respuesta:**
+```json
+{
+  "status": "success",
+  "model_used": "rf_model_20251114_181516",
+  "input_shape": [100, 60],
+  "features_used": 58,
+  "predictions_count": 100,
+  "predictions": [0, 1, 1, 0, ...],
+  "original_columns": ["url", "feature1", "feature2", ...],
+  "features_columns": ["feature1", "feature2", ...],
+  "message": "Successfully made 100 predictions using model 'rf_model_20251114_181516'"
+}
+```
+
+**Ejemplo:**
+```bash
+# Usando curl
+curl -X POST "http://localhost:8000/validate" \
+  -F "csv_file=@data/processed/features.csv" \
+  -F "model_name=rf_model_20251114_181516"
+
+# Guardar predicciones en archivo
+curl -X POST "http://localhost:8000/validate" \
+  -F "csv_file=@data/processed/features.csv" \
+  -F "model_name=rf_model_20251114_181516" \
+  -o predictions.json
+```
+
+**Notas:**
+- El archivo CSV puede contener columnas no numéricas (como 'url'), que serán eliminadas automáticamente
+- El modelo utiliza solo las features numéricas con las que fue entrenado
+- Si el modelo tiene `feature_names_in_`, se validará que el CSV contenga todas las features requeridas
+
+---
+
+#### **Entrenamiento**
+
+##### `POST /train` - Entrenar Nuevo Modelo
+Entrena un nuevo modelo Random Forest con los parámetros especificados. Utiliza MLflow para tracking de experimentos y guarda el modelo localmente.
+
+**Parámetros:**
+- `data_path` (string, opcional): Ruta al archivo CSV de entrenamiento
+- `target` (string, opcional): Nombre de la columna objetivo
+- `params` (string JSON, opcional): Hiperparámetros del modelo en formato JSON
+- `ignore_drift` (boolean, opcional): Ignorar detección de drift en datos (default: false)
+
+**Parámetros permitidos en `params`:**
+```json
+{
+  "n_estimators": 300,
+  "max_depth": 12,
+  "min_samples_split": 2,
+  "min_samples_leaf": 1,
+  "max_features": "sqrt",
+  "random_state": 42
+}
+```
+
+**Respuesta:**
+```json
+{
+  "message": "Model training test completed successfully.",
+  "metrics": {
+    "accuracy": 0.8543,
+    "precision": 0.8321,
+    "recall": 0.8765,
+    "f1": 0.8538
+  }
+}
+```
+
+**Ejemplo:**
+```bash
+# Entrenamiento básico
+curl -X POST "http://localhost:8000/train" \
+  -F "data_path=data/processed/features_with_target.csv" \
+  -F "target=is_popular"
+
+# Entrenamiento con hiperparámetros personalizados
+curl -X POST "http://localhost:8000/train" \
+  -F "data_path=data/processed/features_with_target.csv" \
+  -F "target=is_popular" \
+  -F 'params={"n_estimators": 200, "max_depth": 15, "random_state": 42}'
+
+# Entrenamiento ignorando drift
+curl -X POST "http://localhost:8000/train" \
+  -F "data_path=data/processed/features_with_target.csv" \
+  -F "target=is_popular" \
+  -F "ignore_drift=true"
+```
+
+**Notas:**
+- Si no se proporciona el target y existe la columna 'shares', se creará automáticamente como clasificación binaria (shares > 1400)
+- El endpoint detecta drift en los datos y puede fallar si se detecta (a menos que `ignore_drift=true`)
+- Los modelos se guardan localmente en `./models/` y se registran en MLflow
+
+---
+
+### Códigos de Estado HTTP
+
+- `200` - Operación exitosa
+- `400` - Error en los parámetros de entrada o datos inválidos
+- `404` - Modelo o archivo no encontrado
+- `500` - Error interno del servidor
+
+---
+
+### Manejo de Errores
+
+Todos los endpoints retornan errores en formato JSON:
+
+```json
+{
+  "detail": "Descripción del error"
+}
+```
+
+**Ejemplos de errores comunes:**
+
+```bash
+# Modelo no encontrado
+{
+  "detail": "Model 'modelo_inexistente' not found. Available models can be checked at /models endpoint"
+}
+
+# Archivo CSV inválido
+{
+  "detail": "File must be a CSV file"
+}
+
+# Parámetros de entrenamiento inválidos
+{
+  "detail": "Unknown parameters: ['param_invalido']. Allowed: ['n_estimators', 'max_depth', ...]"
+}
+
+# Drift detectado
+{
+  "detail": "Data drift detected based on the provided metrics. To continue training, please address the drift issue or run training with param 'ignore_drift=True'."
+}
+```
 
 ---
 
